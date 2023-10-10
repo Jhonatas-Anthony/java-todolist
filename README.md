@@ -1,0 +1,1 @@
+estarei usando uma database chamada H2 database, que é similar ao SQLite, guardando os dados na memória
