@@ -1,5 +1,6 @@
 package br.com.jhonatas.todolist.controller.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+    // Com esse parâmetro consigo fazer com que o spring gerencie esse repositório para mim
+    @Autowired
+    private IUserRepository userRepository;
+
     /* 
      * String
      * Integer
@@ -25,9 +31,10 @@ public class UserController {
      * void
      */
     @PostMapping("/create")
-    public void create(@RequestBody UserModel UserModel){
+    public UserModel create(@RequestBody UserModel userModel){
 
-        System.out.println(UserModel.getUsername());
+        var userCreated = this.userRepository.save(userModel);
+        return userCreated;
 
     }
 
