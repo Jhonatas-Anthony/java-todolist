@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
+
 
 /*
  * Modificadores:
@@ -41,6 +43,11 @@ public class UserController {
             //Mensagem de erro + status code
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário já existe");
         }
+
+        var password = BCrypt.withDefaults()
+        .hashToString(12, userModel.getPassword().toCharArray());
+
+        userModel.setPassword(password);
 
         // var userCreated = this.userRepository.save(userModel);
         this.userRepository.save(userModel);
