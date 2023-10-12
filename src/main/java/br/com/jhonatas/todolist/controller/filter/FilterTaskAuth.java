@@ -9,13 +9,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import br.com.jhonatas.todolist.controller.user.IUserRepository;
-import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.Filter;
 
 @Component
 public class FilterTaskAuth extends OncePerRequestFilter {
@@ -29,12 +29,14 @@ public class FilterTaskAuth extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
-		// Pegar autenticação *usuario + senha*
-		var authorization = request.getHeader("Authorization");
+		// Verificar se é a rota de tasks
+		var serveltPath = request.getServletPath();
 
-		if (authorization == null) {
-			filterChain.doFilter(request, response);
-		} else {
+		if (serveltPath.equals("/tasks/")) {
+			// Pegar autenticação *usuario + senha*
+			var authorization = request.getHeader("Authorization");
+
+			// filterChain.doFilter(request, response);
 			var authEncoded = authorization.substring("Basic".length()).trim();
 
 			byte[] decoded = Base64.getDecoder().decode(authEncoded);
@@ -58,13 +60,14 @@ public class FilterTaskAuth extends OncePerRequestFilter {
 				if (passwordVerify.verified) {
 					filterChain.doFilter(request, response);
 				} else {
-					response.sendError(401);
+					response.sendError(401,  "Senha errada");
 				}
-
-				// Pode passar
-
 			}
+		} 
+		else {
+			filterChain.doFilter(request, response);
 		}
+
 	}
 
 }
