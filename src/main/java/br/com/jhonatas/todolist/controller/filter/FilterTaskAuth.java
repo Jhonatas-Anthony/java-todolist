@@ -32,7 +32,7 @@ public class FilterTaskAuth extends OncePerRequestFilter {
 		// Verificar se é a rota de tasks
 		var serveltPath = request.getServletPath();
 
-		if (serveltPath.equals("/tasks/")) {
+		if (serveltPath.startsWith("/tasks/")) {
 			// Pegar autenticação *usuario + senha*
 			var authorization = request.getHeader("Authorization");
 
@@ -46,8 +46,6 @@ public class FilterTaskAuth extends OncePerRequestFilter {
 			String[] credeintials = authString.split(":");
 			String username = credeintials[0];
 			String password = credeintials[1];
-			System.out.println(username);
-			System.out.println(password);
 
 			// Validar user
 			var existsUser = this.userRepository.findByUsername(username);
