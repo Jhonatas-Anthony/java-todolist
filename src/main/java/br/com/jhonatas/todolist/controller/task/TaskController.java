@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,20 +57,28 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public TaskModel update(@RequestBody TaskModel taskModel, HttpServletRequest request, @PathVariable UUID id) {
-        //var userId = request.getAttribute("userId");
-
+    public ResponseEntity update(@RequestBody TaskModel taskModel, HttpServletRequest request, @PathVariable UUID id) {
         var task = this.taskRepository.findById(id).orElse(null);
+        
+        if(task == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Tarefa não encontrada");
+        }
+
+        var userId = request.getAttribute("userId");
+
+        
+
+        if (!task.getUserId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Esse usuário não ter permissão para alterar essa tarefa");
+        }
 
         Utils.copyNonNullProperties(taskModel, task);
 
-        /*
-         * taskModel.setUserId((UUID) userId);
-         * 
-         * taskModel.setId((id));
-         */
+        var taskUpdate = this.taskRepository.save(task);
 
-        return this.taskRepository.save(task);
+        return ResponseEntity.status(HttpStatus.OK).body(taskUpdate);
 
     }
 }
