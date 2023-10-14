@@ -67,8 +67,6 @@ public class TaskController {
 
         var userId = request.getAttribute("userId");
 
-        
-
         if (!task.getUserId().equals(userId)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Esse usuário não ter permissão para alterar essa tarefa");
